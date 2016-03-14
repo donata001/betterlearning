@@ -1,11 +1,13 @@
 {% extends "_base.html" %}
+{% block background %}
+<div class="main-wrap" style="background: url('../static/css/images/frozen.jpg') no-repeat;">
+{% endblock %}
 
 {% block content %}
-	<div class="rainbowWrap">
-		<div class="rainbowBg"></div>
-		<input class="rainbow" type="text"/>							
-	</div>
-	<div>
-	<a href="" class="button green criss-cross">Green Button</a>
-	</div>
+<div class="msg-list">
+    <div class="messenger-container">
+        <p>Hello what's your name?</p>
+    </div>
+</div>
+	
 {% endblock %}
