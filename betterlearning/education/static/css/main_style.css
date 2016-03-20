@@ -59,6 +59,7 @@ p {
   font-weight: 300;
   line-height: 30px;
 }
+
 blockquote {
   font-family: 'Raleway', serif;
   font-size: 20px;
@@ -72,22 +73,6 @@ blockquote {
 ::-moz-placeholder,
 :-ms-input-placeholder {
   color: #626262;
-}
-.green {
-    background-color: #7EC244;
-    box-shadow: 0 5px 5px #518631, 0 9px 0 #395F26, 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 9px rgba(255, 255, 255, 0.2) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
-}
-
-.green:hover {
-    box-shadow: 0 5px 5px #518631, 0 9px 0 #395F26, 0 9px 10px rgba(0, 0, 0, 0.4), 0 2px 15px rgba(255, 255, 255, 0.4) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;
-}
-
-.green:active {
-    box-shadow: 0 2px 0 #395F26, 0 4px 4px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.2) inset;
-}
-
-.criss-cross {
-    border-radius: 35px 5px 35px 5px;
 }
 
 input[type="text"],
@@ -105,53 +90,6 @@ textarea {
 }
 textarea {
   resize: none;
-}
-
-.rainbowWrap {
-    width: 200px;
-	margin: auto;
-background: #ff4747; /* Old browsers */
-background: -moz-linear-gradient(left, #ff4747 0%, #ffe349 16%, #49ff7a 41%, #49b9ff 59%, #49b9ff 59%, #494fff 73%, #f549ff 87%, #ff474a 100%); /* FF3.6+ */
-background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ff4747), color-stop(16%,#ffe349), color-stop(41%,#49ff7a), color-stop(59%,#49b9ff), color-stop(59%,#49b9ff), color-stop(73%,#494fff), color-stop(87%,#f549ff), color-stop(100%,#ff474a)); /* Chrome,Safari4+ */
-background: -webkit-linear-gradient(left, #ff4747 0%,#ffe349 16%,#49ff7a 41%,#49b9ff 59%,#49b9ff 59%,#494fff 73%,#f549ff 87%,#ff474a 100%); /* Chrome10+,Safari5.1+ */
-background: -o-linear-gradient(left, #ff4747 0%,#ffe349 16%,#49ff7a 41%,#49b9ff 59%,#49b9ff 59%,#494fff 73%,#f549ff 87%,#ff474a 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(left, #ff4747 0%,#ffe349 16%,#49ff7a 41%,#49b9ff 59%,#49b9ff 59%,#494fff 73%,#f549ff 87%,#ff474a 100%); /* IE10+ */
-background: linear-gradient(to right, #ff4747 0%,#ffe349 16%,#49ff7a 41%,#49b9ff 59%,#49b9ff 59%,#494fff 73%,#f549ff 87%,#ff474a 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff4747', endColorstr='#ff474a',GradientType=1 ); /* IE6-9 */
-    padding: 4px;
-    box-shadow: inset 0px 0px 5px 3px white;
-    border-radius: 2px;
-    position:relative;
-    z-index: 1;
-}
-
-.rainbowBg {
-    width: 184px;
-    height:15px;
-    background: white;
-    position:absolute;
-    top: 10px;
-    left: 10px;
-    box-shadow: 0px 0px 7px 2px white, 0px 0px 13px 2px white;
-    border-radius: 4px;
-    z-index: 2;
-}
-
-.rainbow {
-    width:186px;
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.5);
-    padding: 5px;
-    border-radius: 4px;    
-    outline:none;
-    display: block;
-    position:relative;
-    z-index: 500;
-    color:#666;
-}
-
-.rainbow:focus{
-    border:1px solid white;
 }
 
 select {
@@ -1704,9 +1642,9 @@ h2#wsite-com-product-title {
     position: relative; box-sizing: border-box;
     box-shadow: 7px 10px 6px -5px #BBC0C7;
 }
-.messenger-container p {
-   color: black;
-    font-size: 12px;
+.messenger-container h4 {
+    color: #0000FF;
+    font-size: 18px;
     margin-bottom: 6px;
     line-height: 18px;
     word-wrap: break-word; margin: 0;
