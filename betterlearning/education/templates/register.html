@@ -3,15 +3,39 @@
 <div class="main-wrap" style="background: url('../static/css/images/frozen.jpg') no-repeat;">
 {% endblock %}
 
+{% block js %}
+
+<script>
+
+    
+</script>
+
+
+{% endblock %}
+
 {% block content %}
-<div class='row'>
-	<div class="col-xs-1"><img src="../static/css/images/elsa_round_ei.jpg" style="width:150px;height:150px;"></div>
-	<div class="col-xs-11">
-		<div class="msg-list">
-	    <div class="messenger-container">
-	        <h4>Hello what's your name?</h4>
-	    </div>
+<div class="carousel-caption"> 
+	<div class='row vtop'>
+		<div class="col-xs-1"><img src="../static/css/images/elsa_round_ei.jpg" style="width:150px;height:150px;"></div>
+		<div class="col-xs-11">
+			<div class="msg-list">
+		    <div class="messenger-container">
+		        <h4>Hello what's your name?</h4>
+		    </div>
+		</div>
+		</div>	
+	</div>		
+
+	<div class="row vbottom">
+		<form enctype="multipart/form-data" method="post" action="{% url 'question_process' %}">
+		{% csrf_token %}		
+		<div id="question-box" class="col-sm-10 vbottom">			
+			<input type="text" id="question" />		
+			<button type="submit" class="btn btn-warning btn-lg">Send</button>	
+		</div>
+
+		</form>
 	</div>
-	</div>	
-</div>	
+</div>
+
 {% endblock %}
