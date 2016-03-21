@@ -1688,18 +1688,6 @@ h2#wsite-com-product-title {
        left: 99%;border-right: none;
 }
 
-#question-box {
-    padding: 0 20px;
-    min-width: 200px;
-    height:45px;
-    line-height:45px;
-    outline:none;
-    background-color: #dfd4d7;
-    position: absolute;
-    top: -400px;
-    left: 99%;border-right: none;
-    font-size: 26px; font-family: monospace;
-}
 [class*="col"]{border:1px;}
 .carousel-caption{
 	border:1px;

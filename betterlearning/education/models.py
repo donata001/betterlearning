@@ -13,13 +13,20 @@ class UserProfile(models.Model):
         return "%s's profile" % self.user  
 
 class Messages(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     type =  models.IntegerField(choices=message_types)
-    session = models.ForeignKey('Sessions')
+    session = models.ForeignKey('Sessions', null=True)
     content = models.TextField(null=True)
     created = models.DateTimeField(db_index=True, auto_now_add=True)
     
 class Sessions(models.Model):
-    level = models.IntegerField()
+    level = models.IntegerField(null=True)
+    step = models.IntegerField(null=True)
     begin = models.DateTimeField(db_index=True, auto_now_add=True)
     end = models.DateTimeField(db_index=True, auto_now_add=True)
+    
+class ContentLookUp(models.Model):
+    level = models.IntegerField(db_index=True, null=True)
+    step = models.IntegerField(db_index=True, null=True)
+    content_pk = models.IntegerField(null=True)
+    content_type = models.CharField(max_length=256, null=True)
