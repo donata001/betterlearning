@@ -7,7 +7,14 @@
 {% block js %}
 
 <script>
-
+function blinking(elm) {
+    timer = setInterval(blink, 10);
+    function blink() {
+        elm.fadeOut(800, function() {
+           elm.fadeIn(800);
+        });
+    }
+}
     
 </script>
 
@@ -31,14 +38,18 @@
 	</div>		
 
 	<div class="row vbottom">
+		{% if not blink %}	
 		<form enctype="multipart/form-data" method="post" action="{% url 'question_process' step=step uid=uid%}">
-		{% csrf_token %}		
-		<div  class="col-sm-10 vbottom">			
+		{% csrf_token %}						
+		<div  class="col-sm-10 vbottom">	
 			<input type="text" id="question" name="ques"/>		
 			<button type="submit" class="btn btn-warning btn-lg">Send</button>	
 		</div>
+		</form>	
+		{% else %}
+			<a role="button" class="btn btn-warning btn-lg" href="{% url 'courses_view' %}">Go to courses</a>
+		{% endif %}
 
-		</form>
 	</div>
 </div>
 

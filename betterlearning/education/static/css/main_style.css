@@ -1688,34 +1688,18 @@ h2#wsite-com-product-title {
        left: 99%;border-right: none;
 }
 
-[class*="col"]{border:1px;}
-.carousel-caption{
-	border:1px;
-    padding:0;
-    height:140px;
- }
-
-.vtop {
-	position: relative;
-	top: 5%;
-	transform: translateY(-200%); 
+.navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    
+   
+.carousel-inner img {
+    width: 100%; /* Set width to 100% */
+    margin: auto;
+    min-height:200px;
 }
 
-.vcenter{
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%); 
-}
-.vbottom{
-	position: relative;
-  	top: 100%;
-  	transform: translateY(-350%); 
-}
-.vbutton{
-	position: relative;
-  	top: 100%;
-  	transform: translateY(100%); 
-}
 
 @media screen and (max-width: 767px) {
   .container {

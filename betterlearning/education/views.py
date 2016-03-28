@@ -30,7 +30,6 @@ class Courses(View):
 class Register(View):
     
     def get(self, request, step=0, uid=0):
-        data = request.GET
 
         if uid:
             try:
@@ -44,14 +43,20 @@ class Register(View):
         if '{name}' in content and user:            
             name = user.first_name
             content = content.replace('{name}', name)
+        if step == '3':
+            blink = True
+        else:
+            blink = False
+            
         return render(request, REGISTER_TEMPLATE, {"content":content,
                                                    "step":int(step)+1,
-                                                   "uid":uid
+                                                   "uid":uid,
+                                                   'blink': blink
                                                    })
     
     def post(self, request, step, uid):
         data = request.POST
-        print step, uid
+
         if uid:
             try:
                 user = User.objects.get(pk=int(uid))
@@ -66,13 +71,14 @@ class Register(View):
                                           email='fake@fa.com')  
             uid = user.pk
         elif step == '2' and data.get('ques') and user:
-            p = UserProfile.objects.create(user=user,
+            UserProfile.objects.create(user=user,
                                        age=int(data.get('ques'))) 
 
         elif step == '3' and data.get('ques') and user:
             up = UserProfile.objects.get(user=user)
             up.hobby = data.get('ques')
             up.save()
+
         return HttpResponseRedirect(reverse(REGISTER_VIEW, kwargs={'step': int(step),
                                                                    'uid': uid}))
 
