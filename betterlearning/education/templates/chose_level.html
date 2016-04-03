@@ -1,0 +1,23 @@
+{% extends "_base.html" %}
+{% block background %}
+{% load staticfiles %}
+<div class="main-wrap" style="background: url({% static "css/images/green.jpg" %}) no-repeat;">
+{% endblock %}
+
+{% block content %}
+{% load staticfiles %}
+<div class="carousel-caption"> 
+	<div class='row vtop'>
+		<div class="col-xs-6">
+		<a role="button" class="btn btn-warning btn-lg" href="{% url 'begin_course_view' course=course level=0  %}">Begin new session</a>
+		</div>
+		
+		<div class="col-xs-6">
+		<a role="button" class="btn btn-warning btn-lg" href="{% url 'begin_course_view' course=course level=99  %}">Go to existing session</a>
+		</div>
+		
+	</div>		
+
+</div>
+
+{% endblock %}

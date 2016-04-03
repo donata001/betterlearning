@@ -16,9 +16,7 @@
 </head>
 
 <body class='splash-page  wsite-theme-dark'>
-	<div class="main-wrap">
 	{% block background %}{% endblock %}
-		<div class="birdseye-header">
 		{% block header %}{% endblock %}
 		
             <div class="nav-wrap">
@@ -27,19 +25,17 @@
 			          <ul class="nav navbar-nav navbar-right">
 			            <li><a href="{% url 'home_view'%}">HOME</a></li>  
 			            <li><a href="{% url 'courses_view' %}">COURSES</a></li>         
-			            <li><a href="{% url 'register_view' %}">REGISTER</a></li>   
+			            <li><a href="{% url 'register_view' %}">REGISTER</a></li> 
+			            <li><a href="{% url 'user_login' %}">LOGIN</a></li>     
 			          </ul>
 			        </div>
                     <label class="hamburger"><span></span></label>
                 </div>
-            </div>
         </div>
 
         {% block content %}{% endblock %}
 
-        <div class="footer-wrap">
-        {% block footer %}{% endblock %}
-        </div>
+    
     </div>
 
     <div id="navMobile" class="nav mobile-nav"></div>

@@ -1,1 +1,55 @@
 {% extends "_base.html" %}
+{% block background %}
+{% load staticfiles %}
+<div class="main-wrap" style="background: url({% static "css/images/courses.jpg" %}) no-repeat;">
+{% endblock %}
+
+{% block js %}
+
+<script>
+function blinking(elm) {
+    timer = setInterval(blink, 10);
+    function blink() {
+        elm.fadeOut(800, function() {
+           elm.fadeIn(800);
+        });
+    }
+}
+    
+</script>
+
+
+{% endblock %}
+
+{% block content %}
+{% load staticfiles %}
+<div class="carousel-caption"> 
+	<div class='row vtop'>
+		<div class="col-xs-3">
+		<a href="{% url 'home_view' %}">
+		<img src="{% static "css/images/art.jpg" %}" title="Art" style="width:230px;height:200px;">
+		</a>
+		</div>
+		
+		<div class="col-xs-3">
+		<a href="{% url 'home_view' %}">
+		<img src="{% static "css/images/Language.jpg" %}" title="Lanuage" style="width:230px;height:200px;">
+		</a>
+		</div>
+		
+		<div class="col-xs-3">
+		<a href="{% url 'chose_level' course=3 %}">
+		<img src="{% static "css/images/math.jpeg" %}" title="Math" style="width:230px;height:200px;">
+		</a>
+		</div>
+		
+		<div class="col-xs-3">
+		<a href="{% url 'home_view' %}">
+		<img src="{% static "css/images/science.jpg" %}" title="Science" style="width:230px;height:200px;">
+		</a>
+		</div>
+	</div>		
+
+</div>
+
+{% endblock %}

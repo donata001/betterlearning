@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+{% block background %}
+{% load staticfiles %}
+<div class="main-wrap" style="background: url({% static "css/images/error.jpg" %}) no-repeat;">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <h2>ERROR: {{ message }}</h2>
+   
+</div>
+{% endblock %}
