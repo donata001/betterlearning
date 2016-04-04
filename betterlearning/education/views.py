@@ -21,6 +21,7 @@ CHOSE_LEVEL_TEMPLATE = 'chose_level.html'
 CHOSE_LEVEL_VIEW = 'chose_level'
 COURSES_VIEW = 'courses_view'
 BEGIN_COURSE_VIEW = 'begin_course.html'
+IN_COURSE_VIEW = 'course_question_process'
 
 
 class Home(View):
@@ -103,56 +104,72 @@ class BeginCourse(View):
             return error_response(request, "Oops, you are not in, please signin first!")     
         user = request.user       
  
-        content_pk = ContentLookUp.objects.get(course=course, level=level, step=step).content_pk
+        clp = ContentLookUp.objects.get(course=int(course), 
+                                               level=int(level), step=int(step))
+        clp_id = clp.pk
+        content_pk = clp.content_pk
         content = Messages.objects.get(pk=content_pk).content
+        sid = None
         
         if '{name}' in content and user:            
             name = user.first_name
             content = content.replace('{name}', name)
 
-        if int(level) == 0 and int(step) == 0:
+        if int(step) == 0:
             button = True
         else:
             button = False
 
+        if 0<int(step) < 6:
+            quiz = True
+            # start an session
+            sec = Sessions.objects.create(course=int(course),
+                                        level=int(level),
+                                        step=int(step),
+                                        user=user)
+            sid = sec.pk
+        else:
+            quiz = False
+
         return render(request, BEGIN_COURSE_VIEW, {"content":content,
-                                                   "step":step+1,
+                                                   "step":int(step)+1,
                                                    'course': course,
                                                    'level': level,
-                                                   'button': button                                          
+                                                   'button': button,
+                                                   'quiz': quiz,
+                                                   'clp_id': clp_id,
+                                                   'sid': sid                                       
                                                    })
     
-    def post(self, request, step, uid):
+    def post(self, request, course, level, step):
+        
+        if not request.user.is_authenticated():   
+            return error_response(request, "Oops, you are not in, please signin first!")     
         data = request.POST
-
-        if uid:
+        
+        quiz, clp_id, ques, sid = data.get('quiz'), data.get('clp_id'), data.get('ques'), data.get('sid')
+        Messages.objects.create(type=1,
+                                content=ques,
+                                session_id=sid,
+                                user=request.user)
+        
+        if quiz and clp_id and sid:
             try:
-                user = User.objects.get(pk=int(uid))
+                clp = ContentLookUp.objects.get(pk=clp_id)
+                sec = Sessions.objects.get(pk=sid)
             except:
-                user = None
-        if step == '1' and data.get('ques'):
-            user = User.objects.create_user(password='sesame',
-                                          last_login=now(), 
-                                          username=data.get('ques'),
-                                          first_name=data.get('ques').split()[0], 
-                                          last_name=data.get('ques').split()[1], 
-                                          email=data.get('ques')+'@fake.com')  
-            uid = user.pk
-        elif step == '2' and data.get('ques') and user:
-            UserProfile.objects.create(user=user,
-                                       age=int(data.get('ques'))) 
+                return error_response(request, "Session error, please redo session") 
+            ans = clp.answer
+            if ans == ques:
+                sec.correct = True
+            else:
+                sec.correct = False
+            sec.end = now()
+            sec.save()
 
-        elif step == '3' and data.get('ques') and user:
-            up = UserProfile.objects.get(user=user)
-            up.hobby = data.get('ques')
-            up.save()
-            
-        elif step == '4' and data.get('ques') and user:
-            user.password = data.get('ques')
-            user.save()
-
-        return HttpResponseRedirect(reverse(REGISTER_VIEW, kwargs={'step': int(step),
-                                                                   'uid': uid}))
+        return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': int(step),
+                                                                   'course': course,
+                                                                   'level': level}))
         
 
 class ChoseLevel(View):

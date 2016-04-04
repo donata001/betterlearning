@@ -27,6 +27,7 @@
 			            <li><a href="{% url 'courses_view' %}">COURSES</a></li>         
 			            <li><a href="{% url 'register_view' %}">REGISTER</a></li> 
 			            <li><a href="{% url 'user_login' %}">LOGIN</a></li>     
+			            <li><a href="{% url 'user_logout' %}">LOGOUT</a></li> 
 			          </ul>
 			        </div>
                     <label class="hamburger"><span></span></label>
@@ -35,8 +36,6 @@
 
         {% block content %}{% endblock %}
 
-    
-    </div>
 
     <div id="navMobile" class="nav mobile-nav"></div>
 
