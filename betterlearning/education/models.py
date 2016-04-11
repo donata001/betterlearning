@@ -20,6 +20,7 @@ class Messages(models.Model):
     created = models.DateTimeField(db_index=True, auto_now_add=True)
     
 class Sessions(models.Model):
+    uuid = models.UUIDField()
     course = models.IntegerField(db_index=True, null=True)
     level = models.IntegerField(null=True)
     step = models.IntegerField(null=True)

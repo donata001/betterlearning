@@ -103,6 +103,10 @@ class BeginCourse(View):
         if not request.user.is_authenticated():   
             return error_response(request, "Oops, you are not in, please signin first!")     
         user = request.user       
+        
+        if int(step) == 6:
+            return render(request, CHOSE_LEVEL_TEMPLATE, {
+                                                          'course':course})  
  
         # getting all previous steps to records
         records = Sessions.objects.filter(course=int(course),
@@ -173,7 +177,49 @@ class BeginCourse(View):
                 sec.correct = False
             sec.end = now()
             sec.save()
+            
+        # step 5 data collecting to prediction table
+        
+        if int(step) == 6:
+            secs = Sessions.objects.filter(level=int(level),
+                                                user=request.user,
+                                                course=int(course),
+                                                correct=True).order_by('step')
+            print [s.step for s in secs]
+                                                
+            # max_correct_momentum
+            max_len = 0
+            prev = None
+            counter = 0
+            for s in secs:
+                if prev == None:
+                    max_len = 1
+                    prev = s.step
+                    continue
+                if s.step - prev == 1:
+                    counter += 1   
+                    max_len = max(max_len, counter)
+                else:
+                    counter = 1     
+                prev = s.step                     
+                                
+            # aver_speed_at_correct
+            aver_speed_at_correct = sum([(sec.end-sec.begin).seconds for sec in secs]) // secs.count()
+            
+            # best_speed_at_correct
+            best_speed_at_correct = min([(sec.end-sec.begin).seconds for sec in secs]) 
 
+            Prediction.objects.create(base_personal=10,
+                                      base_general=10,
+                                      accumalated=0,
+                                      current_level=int(level),
+                                      correct_num=secs.count(),
+                                      max_currect_momentum=max_len,
+                                      aver_speed_at_correct=aver_speed_at_correct,
+                                      best_speed_at_correct=best_speed_at_correct,
+                                      user=request.user
+                                      )
+                         
         return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': int(step),
                                                                    'course': course,
                                                                    'level': level}))
