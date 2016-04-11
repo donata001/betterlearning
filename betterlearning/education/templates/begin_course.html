@@ -12,7 +12,7 @@
 	<form enctype="multipart/form-data" method="post" action="{% url 'course_question_process' course=course level=level step=step %}">
 		{% csrf_token %}
 			<div class="col-xs-5">
-			<h2 stle="color:white">{{content|safe}}</h2>
+			<h2 style="color:white">{{content|safe}}</h2>
 			</div>						
 			<div class="col-xs-1">
 			<input type="text" id="question" name="ques" style="line-height: 60px; font-size:50px; width:120px;">

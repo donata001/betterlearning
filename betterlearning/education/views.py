@@ -20,7 +20,7 @@ ERROR_TEMPLATE = 'error.html'
 CHOSE_LEVEL_TEMPLATE = 'chose_level.html'
 CHOSE_LEVEL_VIEW = 'chose_level'
 COURSES_VIEW = 'courses_view'
-BEGIN_COURSE_VIEW = 'begin_course.html'
+BEGIN_COURSE_VIEW = 'begin_course2.html'
 IN_COURSE_VIEW = 'course_question_process'
 
 
