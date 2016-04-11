@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^question_process/(?P<step>[0-9]+)/(?P<uid>[0-9]+)$', Register.as_view(), name='question_process'),
     url(r'^chose_level/(?P<course>[0-9]+)$', ChoseLevel.as_view(), name='chose_level'),
     url(r'^begin_course/(?P<course>[0-9]+)/(?P<level>[0-9]+)$', BeginCourse.as_view(), name='begin_course_view'),
-    url(r'^course_question_process/(?P<course>[0-9]+)/(?P<level>[0-9]+)/(?P<step>[0-9]+)$', BeginCourse.as_view(), name='course_question_process'),
+    url(r'^course_question_process/(?P<course>[0-9]+)/(?P<level>[0-9]+)/(?P<step>[0-9]+)/(?P<suuid>.+)$', BeginCourse.as_view(), name='course_question_process'),
     
      
 ]

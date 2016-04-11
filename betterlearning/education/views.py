@@ -7,7 +7,7 @@ from django.contrib import messages
 from .models import *
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils.timezone import now
-
+from uuid import uuid1
 
 HOME_TEMPLATE = 'home.html'
 HOME_VIEW = 'home_view'
@@ -99,11 +99,13 @@ class Register(View):
 
 class BeginCourse(View):
     
-    def get(self, request, course, level=0, step=0):
+    def get(self, request, course, suuid=0, level=0, step=0):
         if not request.user.is_authenticated():   
             return error_response(request, "Oops, you are not in, please signin first!")     
         user = request.user       
-        
+        print suuid
+        if not suuid:
+            suuid = uuid1().hex
         if int(step) == 6:
             return render(request, CHOSE_LEVEL_TEMPLATE, {
                                                           'course':course})  
@@ -111,7 +113,8 @@ class BeginCourse(View):
         # getting all previous steps to records
         records = Sessions.objects.filter(course=int(course),
                                             level=int(level),
-                                            user=user).exclude(end=None)
+                                            user=user,
+                                            uuid=suuid).exclude(end=None)
         
         # prepare blackboard content
         clp = ContentLookUp.objects.get(course=int(course), 
@@ -136,7 +139,8 @@ class BeginCourse(View):
             sec = Sessions.objects.create(course=int(course),
                                         level=int(level),
                                         step=int(step),
-                                        user=user)
+                                        user=user,
+                                        uuid=suuid)
             sid = sec.pk
         else:
             quiz = False
@@ -149,10 +153,11 @@ class BeginCourse(View):
                                                    'quiz': quiz,
                                                    'clp_id': clp_id,
                                                    'sid': sid,
-                                                   'records': records                                     
+                                                   'records': records,
+                                                   'suuid': suuid                                    
                                                    })
     
-    def post(self, request, course, level, step):
+    def post(self, request, course, suuid, level, step):
         
         if not request.user.is_authenticated():   
             return error_response(request, "Oops, you are not in, please signin first!")     
@@ -184,8 +189,8 @@ class BeginCourse(View):
             secs = Sessions.objects.filter(level=int(level),
                                                 user=request.user,
                                                 course=int(course),
-                                                correct=True).order_by('step')
-            print [s.step for s in secs]
+                                                correct=True, 
+                                                uuid=suuid).order_by('step')
                                                 
             # max_correct_momentum
             max_len = 0
@@ -222,7 +227,8 @@ class BeginCourse(View):
                          
         return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': int(step),
                                                                    'course': course,
-                                                                   'level': level}))
+                                                                   'level': level,
+                                                                   'suuid': suuid}))
         
 
 class ChoseLevel(View):
