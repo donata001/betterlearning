@@ -28,7 +28,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Return to home</a>
+                <a class="navbar-brand" href="{% url 'home_view'%}">Return to home</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -53,7 +53,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">Math
-                    <small>Level 1</small>
+                    <small>Level {{level|safe}}  {{user.username|safe}}</small>
                 </h1>
             </div>
         </div>
@@ -94,7 +94,7 @@
 					<div class="col-sm-10">
 						<div class="msg-list">
 					    <div class="messenger-container">
-					        <h4 style="color:white"'>{{content|safe}}</h4>
+					        <h4 style="color:white">{{content|safe}}</h4>
 					    </div>
 					</div>
 					</div>	
@@ -123,14 +123,21 @@
             </div>
 
             <div class="col-md-4">
-                <h3>Project Description</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-                <h3>Project Details</h3>
+                <h3>Progress</h3>
+                
+                <h3>Current at Step {{step|safe}}</h3>
                 <ul>
-                    <li>Lorem Ipsum</li>
-                    <li>Dolor Sit Amet</li>
-                    <li>Consectetur</li>
-                    <li>Adipiscing Elit</li>
+                	{% for r in records %}
+                    <li>Step {{r.step|safe}}  
+                    {% if r.correct %}
+                    <img src="{% static "css/images/green-tick.jpg" %}" style="width:20px;height:20px;">
+                    {% else %}
+                    <img src="{% static "css/images/wrong.png" %}" style="width:20px;height:20px;">
+                    {% endif %}
+                    
+                    </li>
+                    {% endfor %}
+                                       
                 </ul>
             </div>
 

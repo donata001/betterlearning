@@ -104,6 +104,12 @@ class BeginCourse(View):
             return error_response(request, "Oops, you are not in, please signin first!")     
         user = request.user       
  
+        # getting all previous steps to records
+        records = Sessions.objects.filter(course=int(course),
+                                            level=int(level),
+                                            user=user).exclude(end=None)
+        
+        # prepare blackboard content
         clp = ContentLookUp.objects.get(course=int(course), 
                                                level=int(level), step=int(step))
         clp_id = clp.pk
@@ -138,7 +144,8 @@ class BeginCourse(View):
                                                    'button': button,
                                                    'quiz': quiz,
                                                    'clp_id': clp_id,
-                                                   'sid': sid                                       
+                                                   'sid': sid,
+                                                   'records': records                                     
                                                    })
     
     def post(self, request, course, level, step):
