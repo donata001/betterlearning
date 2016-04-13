@@ -1,4 +1,6 @@
+import re
 from django.shortcuts import render
+from random import randint
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,6 +10,9 @@ from .models import *
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils.timezone import now
 from uuid import uuid1
+from sklearn.externals import joblib
+import pandas as pd
+
 
 HOME_TEMPLATE = 'home.html'
 HOME_VIEW = 'home_view'
@@ -22,7 +27,8 @@ CHOSE_LEVEL_VIEW = 'chose_level'
 COURSES_VIEW = 'courses_view'
 BEGIN_COURSE_VIEW = 'begin_course2.html'
 IN_COURSE_VIEW = 'course_question_process'
-
+feature = ['accumalated', 'current_level', 'correct_num', 'max_currect_momentum', 
+           'aver_speed_at_correct', 'best_speed_at_correct']
 
 class Home(View):
     
@@ -103,36 +109,45 @@ class BeginCourse(View):
         if not request.user.is_authenticated():   
             return error_response(request, "Oops, you are not in, please signin first!")     
         user = request.user       
-        print suuid
+
         if not suuid:
             suuid = uuid1().hex
-        if int(step) == 6:
-            return render(request, CHOSE_LEVEL_TEMPLATE, {
-                                                          'course':course})  
- 
+        
         # getting all previous steps to records
         records = Sessions.objects.filter(course=int(course),
                                             level=int(level),
                                             user=user,
                                             uuid=suuid).exclude(end=None)
-        
-        # prepare blackboard content
-        clp = ContentLookUp.objects.get(course=int(course), 
-                                               level=int(level), step=int(step))
-        clp_id = clp.pk
-        content_pk = clp.content_pk
-        content = Messages.objects.get(pk=content_pk).content
-        sid = None
-        
+        clp_id = None
+        sid = None 
+        button = False
+        if int(step) == 0 and int(level) > 0:
+            # summary and redirect to next level
+            base = '{name}, based on our evaluation.'
+            if records:
+                content = base + ' You need to practice more in current level'                      
+            else:               
+                content = ' you are prompted to level ' + level
+            content += '. Click on ready to proceed.'            
+        elif int(level) < 4:                       
+            # prepare blackboard content
+            clp = ContentLookUp.objects.get(course=int(course), 
+                                                   level=int(level), step=int(step))
+            clp_id = clp.pk
+            content_pk = clp.content_pk
+            content = Messages.objects.get(pk=content_pk).content
+            
+        elif int(level) == 4:
+            num1 = randint(100, 999)
+            num2 = randint(1, 10)
+            content = str(num1) + " + " + str(num2) + " ="
+                                
         if '{name}' in content and user:            
             name = user.first_name
             content = content.replace('{name}', name)
 
         if int(step) == 0:
             button = True
-        else:
-            button = False
-
         if 0<int(step) < 6:
             quiz = True
             # start an session
@@ -146,7 +161,7 @@ class BeginCourse(View):
             quiz = False
 
         return render(request, BEGIN_COURSE_VIEW, {"content":content,
-                                                   "step":int(step)+1,
+                                                   "step":int(step) + 1,
                                                    'course': course,
                                                    'level': level,
                                                    'button': button,
@@ -163,27 +178,41 @@ class BeginCourse(View):
             return error_response(request, "Oops, you are not in, please signin first!")     
         data = request.POST
         
-        quiz, clp_id, ques, sid = data.get('quiz'), data.get('clp_id'), data.get('ques'), data.get('sid')
+        quiz, clp_id, ques, sid, exp = data.get('quiz'), data.get('clp_id'), data.get('ques'), data.get('sid'), data.get('content')
         Messages.objects.create(type=1,
                                 content=ques,
                                 session_id=sid,
                                 user=request.user)
         
-        if quiz and clp_id and sid:
+        if quiz and clp_id and sid and exp:
+            # 123 + 45 = 
+            l = exp.split()
+            num1 = int(l[0])
+            oprand = l[1]
+            num2 = int(l[2])
+            if oprand == '+':
+                ans = num1 + num2
+            elif oprand == '-':
+                ans = num1 - num2
+            elif oprand == '*':
+                ans = num1 * num2
+            elif oprand == '/':
+                ans = num1 // num2
+                                
             try:
-                clp = ContentLookUp.objects.get(pk=clp_id)
+                #clp = ContentLookUp.objects.get(pk=clp_id)
                 sec = Sessions.objects.get(pk=sid)
             except:
                 return error_response(request, "Session error, please redo session") 
-            ans = clp.answer
-            if ans == ques:
+
+            if str(ans) == ques:
                 sec.correct = True
             else:
                 sec.correct = False
             sec.end = now()
             sec.save()
             
-        # step 5 data collecting to prediction table
+        # step 6 data collecting to prediction table
         
         if int(step) == 6:
             secs = Sessions.objects.filter(level=int(level),
@@ -191,6 +220,11 @@ class BeginCourse(View):
                                                 course=int(course),
                                                 correct=True, 
                                                 uuid=suuid).order_by('step')
+            if not secs:
+                return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': int(step),
+                                                                   'course': course,
+                                                                   'level': level,
+                                                                   'suuid': suuid}))
                                                 
             # max_correct_momentum
             max_len = 0
@@ -199,6 +233,7 @@ class BeginCourse(View):
             for s in secs:
                 if prev == None:
                     max_len = 1
+                    counter = 1
                     prev = s.step
                     continue
                 if s.step - prev == 1:
@@ -209,22 +244,42 @@ class BeginCourse(View):
                 prev = s.step                     
                                 
             # aver_speed_at_correct
-            aver_speed_at_correct = sum([(sec.end-sec.begin).seconds for sec in secs]) // secs.count()
+            aver_speed_at_correct = sum([(sec.end-sec.begin).seconds for sec in secs])*1.0 / secs.count()
             
             # best_speed_at_correct
             best_speed_at_correct = min([(sec.end-sec.begin).seconds for sec in secs]) 
+            # accumalated gets all the past level correct number sum
+            
+            max_levels = Prediction.objects.filter(user=request.user).order_by('-current_level', '-accumalated', '-correct_num')
 
-            Prediction.objects.create(base_personal=10,
+            if max_levels:
+                max_level = max_levels[0]
+                acc = max_level.accumalated
+                acc += secs.count()
+            else:
+                acc = secs.count()
+
+            p = Prediction.objects.create(base_personal=10,
                                       base_general=10,
-                                      accumalated=0,
+                                      accumalated=acc,
                                       current_level=int(level),
                                       correct_num=secs.count(),
                                       max_currect_momentum=max_len,
                                       aver_speed_at_correct=aver_speed_at_correct,
                                       best_speed_at_correct=best_speed_at_correct,
+                                      predict=True,
                                       user=request.user
                                       )
-                         
+            
+            df =  pd.DataFrame(list(Prediction.objects.filter(pk=p.pk).values()))
+            ft = df[feature]
+            ft['age'] = request.user.userprofile.age
+            model = joblib.load('./models/model.pkl')    
+            p.next_level = model.predict(ft) [0]    
+            p.save()
+            
+            level = p.next_level
+            step = '0'
         return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': int(step),
                                                                    'course': course,
                                                                    'level': level,

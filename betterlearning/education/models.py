@@ -39,10 +39,14 @@ class ContentLookUp(models.Model):
     
 class Training(models.Model):    
     training_accuracy = models.FloatField(default=0, null=True)
+    test_accuracy = models.FloatField(default=0, null=True)
     sample_size = models.IntegerField(null=True)
+    fold = models.IntegerField(null=True)
+    subset_accuracy = models.TextField(null=True)
     created = models.DateTimeField(db_index=True, auto_now_add=True)
     
 class Prediction(models.Model):
+    training = models.ForeignKey(Training, null=True)
     base_personal = models.FloatField(default=0, null=True)
     base_general = models.FloatField(default=0, null=True)
     accumalated = models.FloatField(default=0, null=True)
@@ -52,7 +56,7 @@ class Prediction(models.Model):
     aver_speed_at_correct = models.FloatField(default=0, null=True)
     best_speed_at_correct = models.FloatField(default=0, null=True)
     user = models.ForeignKey(User, null=True)
-    score = models.FloatField(default=0, null=True)
+    predict = models.BooleanField(default=False)
     next_level = models.IntegerField(null=True)
     created = models.DateTimeField(db_index=True, auto_now_add=True)
     
