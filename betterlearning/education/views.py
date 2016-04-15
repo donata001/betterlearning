@@ -1,6 +1,7 @@
 import re
 from django.shortcuts import render
 from random import randint
+import random
 from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
@@ -109,7 +110,7 @@ class BeginCourse(View):
         if not request.user.is_authenticated():   
             return error_response(request, "Oops, you are not in, please signin first!")     
         user = request.user       
-
+        
         if not suuid:
             suuid = uuid1().hex
         
@@ -121,6 +122,7 @@ class BeginCourse(View):
         clp_id = None
         sid = None 
         button = False
+        operand = ""
         if int(step) == 0 and int(level) > 0:
             # summary and redirect to next level
             base = '{name}, based on our evaluation.'
@@ -128,19 +130,57 @@ class BeginCourse(View):
                 content = base + ' You need to practice more in current level'                      
             else:               
                 content = ' you are prompted to level ' + level
-            content += '. Click on ready to proceed.'            
-        elif int(level) < 4:                       
+            content += '. Click on ready to proceed.'    
+            suuid = uuid1().hex        
+        elif int(level) == 0 and int(step) == 0:                       
             # prepare blackboard content
             clp = ContentLookUp.objects.get(course=int(course), 
                                                    level=int(level), step=int(step))
             clp_id = clp.pk
             content_pk = clp.content_pk
             content = Messages.objects.get(pk=content_pk).content
-            
+        elif int(level) == 0:
+            num1 = randint(0, 10)
+            num2 = randint(0, 10)
+            operand = random.choice(["+", "-"])
+        elif int(level) == 1:
+            num1 = randint(0, 50)
+            num2 = randint(0, 10)
+            operand = random.choice(["+", "-"])    
+        elif int(level) == 2:
+            num1 = randint(10, 99)
+            num2 = randint(0, 10)
+            operand = random.choice(["+", "-"])   
+        elif int(level) == 3:
+            num1 = randint(10, 99)
+            num2 = randint(10, 99)
+            operand = random.choice(["+", "-"])
         elif int(level) == 4:
             num1 = randint(100, 999)
             num2 = randint(1, 10)
-            content = str(num1) + " + " + str(num2) + " ="
+            operand = random.choice(["+", "-"])
+        elif int(level) == 5:
+            num1 = randint(100, 999)
+            num2 = randint(10, 99)
+            operand = random.choice(["+", "-"])
+        elif int(level) == 6:
+            num1 = randint(100, 999)
+            num2 = randint(100, 999)
+            operand = random.choice(["+", "-"])
+        elif int(level) == 7:
+            num1 = randint(1, 10)
+            num2 = randint(1, 10)
+            operand = "*"
+        elif int(level) == 8:
+            num1 = randint(1, 10)
+            num2 = randint(10, 99)
+            operand = "*"
+        elif int(level) == 9:
+            num1 = randint(1, 10)
+            num2 = randint(100, 999)
+            operand = "*"
+        if operand:
+            content = str(num1) + " " + operand + " " + str(num2) + " ="
                                 
         if '{name}' in content and user:            
             name = user.first_name

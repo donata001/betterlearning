@@ -4,6 +4,7 @@ from sklearn.externals import joblib
 from .models import Prediction, Training
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import svm
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 
 
@@ -20,7 +21,8 @@ def train():
 
     y = df['next_level']
     df = df.drop('next_level', axis=1)
-    neigh = KNeighborsClassifier(n_neighbors=1)
+    #neigh = svm.SVC()
+    neigh = KNeighborsClassifier(n_neighbors=2)
     neigh.fit(df, y) 
 
     #kf = KFold(len(ft[features]), n_folds=10)
@@ -34,7 +36,7 @@ def train():
                                     subset_accuracy=json.dumps(accuracy.tolist()),
                                     test_accuracy=sum(accuracy[(1-test_size)*K:])/K/test_size
                                     )
-    Prediction.objects.all().update(training=batch)
+    Prediction.objects.filter(predict=False).update(training=batch)
     
     if not os.path.exists('./models'):
             os.makedirs('./models')
