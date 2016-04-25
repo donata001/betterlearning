@@ -123,11 +123,22 @@ class BeginCourse(View):
         sid = None 
         button = False
         operand = ""
+        show_video = None
+        show_cheat = False
         if int(step) == 0 and int(level) > 0:
             # summary and redirect to next level
             base = '{name}, based on our evaluation.'
             if records:
-                content = base + ' You need to practice more in current level'                      
+                content = base + ' You need to practice more in current level' 
+                if int(level) > 2 and int(level) < 7:
+                    show_video = 1  
+                    content += ". Watch this lesson will help you"    
+                elif int(level) == 7:
+                    show_cheat = True 
+                    content += ". Review the magic sheet will help you"
+                elif int(level) in [8, 9]:
+                    show_video = 2       
+                    content += ". Watch this lesson will help you."                             
             else:               
                 content = ' you are prompted to level ' + level
             content += '. Click on ready to proceed.'    
@@ -141,10 +152,10 @@ class BeginCourse(View):
             content = Messages.objects.get(pk=content_pk).content
         elif int(level) == 0:
             num1 = randint(0, 10)
-            num2 = randint(0, 10)
+            num2 = randint(0, num1)
             operand = random.choice(["+", "-"])
         elif int(level) == 1:
-            num1 = randint(0, 50)
+            num1 = randint(10, 50)
             num2 = randint(0, 10)
             operand = random.choice(["+", "-"])    
         elif int(level) == 2:
@@ -152,8 +163,8 @@ class BeginCourse(View):
             num2 = randint(0, 10)
             operand = random.choice(["+", "-"])   
         elif int(level) == 3:
-            num1 = randint(10, 99)
-            num2 = randint(10, 99)
+            num2 = randint(10, 50)
+            num1 = randint(50, 99)
             operand = random.choice(["+", "-"])
         elif int(level) == 4:
             num1 = randint(100, 999)
@@ -165,7 +176,7 @@ class BeginCourse(View):
             operand = random.choice(["+", "-"])
         elif int(level) == 6:
             num1 = randint(100, 999)
-            num2 = randint(100, 999)
+            num2 = randint(100, num1)
             operand = random.choice(["+", "-"])
         elif int(level) == 7:
             num1 = randint(1, 10)
@@ -209,7 +220,9 @@ class BeginCourse(View):
                                                    'clp_id': clp_id,
                                                    'sid': sid,
                                                    'records': records,
-                                                   'suuid': suuid                                    
+                                                   'suuid': suuid,
+                                                   'show_video': show_video,
+                                                   "show_cheat":show_cheat                             
                                                    })
     
     def post(self, request, course, suuid, level, step):
@@ -260,8 +273,9 @@ class BeginCourse(View):
                                                 course=int(course),
                                                 correct=True, 
                                                 uuid=suuid).order_by('step')
+            # if all 5 got wrong
             if not secs:
-                return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': int(step),
+                return HttpResponseRedirect(reverse(IN_COURSE_VIEW, kwargs={'step': 0,
                                                                    'course': course,
                                                                    'level': level,
                                                                    'suuid': suuid}))

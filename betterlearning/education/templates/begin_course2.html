@@ -117,7 +117,18 @@
 					<div class="col-sm-5">
 						<a role="button" class="btn btn-warning btn-lg" href="{% url 'course_question_process' course=course level=level step=step suuid=suuid %}">Ready</a>
 					</div>
-						
+					
+					{% if show_video or show_cheat %}
+					<div class="col-sm-6">
+						{% if show_video == 1 %}
+						<iframe width="560" height="315" src="https://www.youtube.com/embed/mAvuom42NyY" frameborder="0"></iframe>
+						{% elif show_video == 2 %}
+					    <iframe width="560" height="315" src="https://www.youtube.com/embed/FJ5qLWP3Fqo" frameborder="0"></iframe>
+					    {% elif show_cheat %}
+					    <img src="{% static "css/images/cheat.jpg" %}" style="width:380px;height:300px;">
+					</div>
+						{% endif %}
+					{% endif %}
 					{% endif %}
 				</div>
 				
