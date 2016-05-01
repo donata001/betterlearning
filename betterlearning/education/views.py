@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.db import IntegrityError
 from .models import *
 from django.utils.timezone import now
 from uuid import uuid1
@@ -78,25 +79,29 @@ class Register(View):
                 user = User.objects.get(pk=int(uid))
             except:
                 user = None
-        if step == '1' and data.get('ques'):
-            user = User.objects.create_user(password='sesame',
-                                          last_login=now(), 
-                                          username=data.get('ques').replace(" ", ""),
-                                          first_name=data.get('ques').split()[0], 
-                                          last_name=data.get('ques').split()[1], 
-                                          email=data.get('ques').replace(" ", "")+'@fake.com')  
+        q = data.get('ques')
+        if step == '1' and q:
+            try:
+                user = User.objects.create_user(password='sesame',
+                                              last_login=now(), 
+                                              username=q.replace(" ", ""),
+                                              first_name=q.split()[0], 
+                                              last_name=q.split()[-1] if len(q) > 1 else None, 
+                                              email=q.replace(" ", "")+'@fake.com')  
+            except IntegrityError:
+                return error_response(request, "Name already taken, please add your nick name at the end.") 
             uid = user.pk
-        elif step == '2' and data.get('ques') and user:
+        elif step == '2' and q and user:
             UserProfile.objects.create(user=user,
                                        age=int(data.get('ques'))) 
 
-        elif step == '3' and data.get('ques') and user:
+        elif step == '3' and q and user:
             up = UserProfile.objects.get(user=user)
             up.hobby = data.get('ques')
             up.save()
             
-        elif step == '4' and data.get('ques') and user:
-            user.set_password(data.get('ques'))
+        elif step == '4' and q and user:
+            user.set_password(q)
             user.save()
 
         return HttpResponseRedirect(reverse(REGISTER_VIEW, kwargs={'step': int(step),
