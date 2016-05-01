@@ -366,8 +366,7 @@ class ChoseLevel(View):
 class ComingSoon(View):
     
     def get(self, request):
-        if request.user.is_authenticated():  
-            return error_response(request, "Coming soon!")
+        return error_response(request, "Coming soon!")
                 
 
 class Login(View):
