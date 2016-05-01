@@ -6,17 +6,6 @@
 
 {% block js %}
 
-<script>
-function blinking(elm) {
-    timer = setInterval(blink, 10);
-    function blink() {
-        elm.fadeOut(800, function() {
-           elm.fadeIn(800);
-        });
-    }
-}
-    
-</script>
 
 
 {% endblock %}
@@ -26,13 +15,13 @@ function blinking(elm) {
 <div class="carousel-caption"> 
 	<div class='row vtop'>
 		<div class="col-xs-3">
-		<a href="{% url 'home_view' %}">
+		<a href="{% url 'placeholder' %}">
 		<img src="{% static "css/images/art.jpg" %}" title="Art" style="width:230px;height:200px;">
 		</a>
 		</div>
 		
 		<div class="col-xs-3">
-		<a href="{% url 'home_view' %}">
+		<a href="{% url 'placeholder' %}">
 		<img src="{% static "css/images/Language.jpg" %}" title="Lanuage" style="width:230px;height:200px;">
 		</a>
 		</div>
@@ -44,7 +33,7 @@ function blinking(elm) {
 		</div>
 		
 		<div class="col-xs-3">
-		<a href="{% url 'home_view' %}">
+		<a href="{% url 'placeholder' %}">
 		<img src="{% static "css/images/science.jpg" %}" title="Science" style="width:230px;height:200px;">
 		</a>
 		</div>

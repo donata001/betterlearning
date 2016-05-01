@@ -8,7 +8,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from .models import *
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.utils.timezone import now
 from uuid import uuid1
 from sklearn.externals import joblib
@@ -114,11 +113,25 @@ class BeginCourse(View):
         if not suuid:
             suuid = uuid1().hex
         
+        if level == '99':           
+
+            # getting existing max level
+            all_records = Sessions.objects.filter(course=int(course),
+                                                user=user
+                                                ).order_by('-level', '-step')
+            if all_records:
+                max_level = all_records[0]
+                level = max_level.level                  
+                step = max_level.step
+                suuid = max_level.uuid
+            else:
+                return error_response(request, "Oops, you don't have any session, begin a new session please!")    
+        
         # getting all previous steps to records
         records = Sessions.objects.filter(course=int(course),
-                                            level=int(level),
-                                            user=user,
-                                            uuid=suuid).exclude(end=None)
+                                                level=int(level),
+                                                user=user,
+                                                uuid=suuid).exclude(end=None)
         clp_id = None
         sid = None 
         button = False
@@ -349,7 +362,13 @@ class ChoseLevel(View):
         else:
             return error_response(request, "Oops, you are not in, please login!")
 
-        
+
+class ComingSoon(View):
+    
+    def get(self, request):
+        if request.user.is_authenticated():  
+            return error_response(request, "Coming soon!")
+                
 
 class Login(View):
 
